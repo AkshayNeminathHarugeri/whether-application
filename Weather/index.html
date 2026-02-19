@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whether | Premium Weather</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="theme-default">
+  <div id="bg-overlay"></div>
+  <div id="clouds-container">
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+    <div class="cloud cloud-4"></div>
+  </div>
+
+  <main class="app-container">
+    <!-- Header / Search -->
+    <header class="header">
+      <div class="logo">
+        <i class="ph ph-cloud-sun"></i>
+        <span>Whether</span>
+      </div>
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <i class="ph ph-magnifying-glass"></i>
+          <input type="text" id="cityInput" placeholder="Search city..." autocomplete="off">
+        </div>
+        <button id="searchBtn" class="search-btn">
+          <i class="ph ph-arrow-right"></i>
+        </button>
+      </div>
+      <div class="actions">
+        <button id="browseBtn" class="browse-btn" title="Browse Talukas">
+          <i class="ph ph-list-bullets"></i>
+          <span>Browse</span>
+        </button>
+        <button id="unitToggle" class="unit-toggle" title="Toggle C/F">
+          <span id="unitLabel">°C</span>
+        </button>
+        <button id="locationBtn" title="Use current location">
+          <i class="ph ph-crosshair"></i>
+        </button>
+        <button id="logoutBtn" title="Logout">
+          <i class="ph ph-sign-out"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Taluka Selection Modal -->
+    <div id="browseModal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Select Location</h2>
+          <button id="closeModal" class="close-btn"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="select-group">
+            <label for="stateSelect">State</label>
+            <select id="stateSelect">
+              <option value="Karnataka">Karnataka</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Tamil Nadu">Tamil Nadu</option>
+            </select>
+          </div>
+          <div class="select-group">
+            <label for="districtSelect">District</label>
+            <select id="districtSelect">
+              <option value="">Select District</option>
+            </select>
+          </div>
+          <div class="select-group">
+            <label for="talukaSelect">Taluka</label>
+            <select id="talukaSelect" disabled>
+              <option value="">Select Taluka</option>
+            </select>
+          </div>
+          <button id="applyLocation" class="apply-btn" disabled>Apply Selection</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="dashboard hidden">
+      <!-- Hero Section: Current Weather -->
+      <section class="hero-section">
+        <div class="main-info">
+          <h1 id="cityName">---</h1>
+          <p id="currentDate">---</p>
+          <div class="temp-display">
+            <span id="currentTemp">--</span><span class="unit">°</span>
+          </div>
+          <p id="weatherDesc" class="weather-desc">---</p>
+        </div>
+        <div class="hero-visual">
+          <i id="mainIcon" class="ph ph-cloud"></i>
+        </div>
+      </section>
+
+      <!-- Metrics Grid -->
+      <section class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-icon"><i class="ph ph-thermometer"></i></div>
+          <div class="metric-content">
+            <span class="label">Feels Like</span>
+            <span id="feelsLike" class="value">--°</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon"><i class="ph ph-drop"></i></div>
+          <div class="metric-content">
+            <span class="label">Humidity</span>
+            <span id="humidity" class="value">--%</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon"><i class="ph ph-wind"></i></div>
+          <div class="metric-content">
+            <span class="label">Wind</span>
+            <span id="windSpeed" class="value">-- km/h</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon"><i class="ph ph-sun"></i></div>
+          <div class="metric-content">
+            <span class="label">UV Index</span>
+            <span id="uvIndex" class="value">--</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon"><i class="ph ph-cloud-rain"></i></div>
+          <div class="metric-content">
+            <span class="label">Rain</span>
+            <span id="precipitation" class="value">--%</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon"><i class="ph ph-gauge"></i></div>
+          <div class="metric-content">
+            <span class="label">Pressure</span>
+            <span id="pressure" class="value">-- hPa</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon"><i class="ph ph-eye"></i></div>
+          <div class="metric-content">
+            <span class="label">Visibility</span>
+            <span id="visibility" class="value">-- km</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon"><i class="ph ph-sun-horizon"></i></div>
+          <div class="metric-content">
+            <span class="label">Sunrise</span>
+            <span id="sunrise" class="value">--:--</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Hourly Forecast -->
+      <section class="forecast-section">
+        <h3>Hourly Forecast</h3>
+        <div id="hourlyForecast" class="hourly-list">
+          <!-- Hourly items injected via JS -->
+        </div>
+      </section>
+
+      <!-- Temperature Trend Graph -->
+      <section class="forecast-section">
+        <h3>Temperature Trend (24h)</h3>
+        <div class="chart-container">
+          <canvas id="tempChart"></canvas>
+        </div>
+      </section>
+
+      <!-- Daily Forecast -->
+      <section class="forecast-section">
+        <h3>7-Day Forecast</h3>
+        <div id="dailyForecast" class="daily-list">
+          <!-- Daily items injected via JS -->
+        </div>
+      </section>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loader" class="loader">
+      <div class="spinner"></div>
+      <p>Gathering atmospheric data...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="error" class="error hidden">
+      <i class="ph ph-warning-circle"></i>
+      <p id="errorMsg">Something went wrong.</p>
+      <button onclick="window.location.reload()">Try Again</button>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
